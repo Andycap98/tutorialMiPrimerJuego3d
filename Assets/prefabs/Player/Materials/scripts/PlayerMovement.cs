@@ -1,27 +1,32 @@
-
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Vector3 forceToApply;
-    private float timeSinceLastForce;
-    private float intervalTime;
-    // Start es la funcion qure se llama al iniciar el juego
+    private IMovementStrategy movementStrategy;
+    private Player player;
+
     void Start()
     {
-        forceToApply= new Vector3 (0,0,300);
-        timeSinceLastForce=0f;
-        intervalTime =2f;
+        player = new Player();
+        // Estrategia inicial (puedes cambiarla en runtime)
+        SetMovementStrategy(new AccelerateMovementStrategy());
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        timeSinceLastForce += Time.fixedDeltaTime;
-        if ( timeSinceLastForce >= intervalTime)
+        MovePlayer();
+    }
+
+    public void SetMovementStrategy(IMovementStrategy strategy)
+    {
+        movementStrategy = strategy;
+    }
+
+    private void MovePlayer()
+    {
+        if (movementStrategy != null)
         {
-            gameObject.GetComponent<Rigidbody>().AddForce(forceToApply);
-            timeSinceLastForce=0f;
+            movementStrategy.Move(transform, player);
         }
     }
 }
